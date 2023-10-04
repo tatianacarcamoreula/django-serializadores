@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 
 # Luego importamos todos los serializadores de django rest framework.
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
 
 class ComicSerializer(serializers.ModelSerializer):
     # new_field = serializers.SerializerMethodField()
@@ -33,13 +32,5 @@ class UserLoginSerializer(serializers.Serializer):
     class Meta:
         fields = ('username', 'password')
 
-class TokenSerializer(serializers.ModelSerializer):
-    user = UserSerializer(many=False, read_only=True)
-    token = serializers.CharField(source='key', read_only=True)
-
-    class Meta:
-        model = Token
-        fields = ('user', 'token')
-        
 
 # TODO: Realizar el serializador para el modelo de WishList

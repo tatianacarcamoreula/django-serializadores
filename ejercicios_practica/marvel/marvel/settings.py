@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-# NOTE: Importamos os para indicar el directorio de templates y otras utilidades:
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,16 +41,10 @@ BASE_APPS = [
 ]
 
 # Acá van las apps de 3ros que necesitamos agregar para que Django las encuentre.
-THIRD_APPS = [
-    'rest_framework',
-    'rest_framework.authtoken',
-    'drf_yasg',
-]
+THIRD_APPS = ['rest_framework']
 
 # Acá van las apps que creamos nosotros.
-LOCAL_APPS = [
-    'e_commerce',
-]
+LOCAL_APPS = ['e_commerce']
 
 INSTALLED_APPS = BASE_APPS + THIRD_APPS + LOCAL_APPS
 
@@ -67,22 +59,7 @@ INSTALLED_APPS = BASE_APPS + THIRD_APPS + LOCAL_APPS
 #     'e_commerce',
 #     # Third party apps: acá vamos agregando las aplicaciones de terceros, extensiones de Django.
 #     'rest_framework',
-#     'rest_framework.authtoken',
-#     'drf_yasg',
 # ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
-}
-
 
 
 MIDDLEWARE = [
@@ -101,8 +78,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # NOTE: Agregamos el directorio para los templates, necesario para Swagger
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
-        # 'DIRS': [],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -5,10 +5,6 @@ import hashlib
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from rest_framework.decorators import api_view, renderer_classes
-from rest_framework.renderers import TemplateHTMLRenderer
-from drf_yasg.utils import swagger_auto_schema
-
 from e_commerce.models import *
 from marvel.settings import VERDE, CIAN, AMARILLO
 
@@ -24,12 +20,7 @@ URL_BASE = 'http://gateway.marvel.com/v1/public/'
 ENDPOINT = 'comics'
 PARAMS = dict(ts=TS, apikey=PUBLIC_KEY, hash=HASHED.hexdigest())
 
-# NOTE: Agregamos los siguientes 3 decoradores
-# para que Swagger considere a la función como una 
-# vista de API y pueda ser visualizada en su UI.
-# @swagger_auto_schema(methods=['get'])
-# @api_view(['GET'])
-# @renderer_classes([TemplateHTMLRenderer])
+
 @csrf_exempt
 def get_comics(request):
     '''
