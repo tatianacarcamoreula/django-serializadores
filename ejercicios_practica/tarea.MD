@@ -16,8 +16,10 @@ Recuerde que no debe subir la base de datos al sistema, para ello se encuentra e
 ### 1. Implemente el serializador necesario para el modelo WishList.
 Basado en el material visto en clase, incluido en la carpeta "ejemplos_clase" desarrolle el serializador necesario para el modelo WishList.
 Para poder incluir los campos relacionados --> Foreign Keys, un camino podría ser utilizar el método 'serializers.PrimaryKeyRelatedField' por ejemplo:
-    ```user = serializers.PrimaryKeyRelatedField(write_only=True,
-                                                   queryset=User.objects.all())```
+  ```user = serializers.PrimaryKeyRelatedField(
+          write_only=True,
+          queryset=User.objects.all()
+     )```
 Luego el atributo debe ser incluido dentro de los 'fields', junto con el resto de los atributos del modelo.
 
 ### 2. Realizar las vistas de API.
@@ -49,8 +51,8 @@ Debe proporcionar protección de acceso a estas vistas de API, la que debe ser a
 ### 3. Asignar las URLs para las vistas de API.
 Asigne las URLs para poder acceder a estas vistas, utilize los siguientes endpoints:
 ```
-- `path('wish/get', GetWishListAPIView.as_view())`
-- `path('wish/post', PostWishListAPIView.as_view())`
+- `path('wish/get/', GetWishListAPIView.as_view())`
+- `path('wish/post/', PostWishListAPIView.as_view())`
 - `path('wish/{comic_id}/', UpdateWishListAPIView.as_view())`
 - `path('wish/{comic_id}/', DeleteWishListAPIView.as_view())`
 ```
@@ -61,7 +63,7 @@ Para ello recomendamos sobrescribir el método `.get_queryset()` y realizar all�
 Utilice el siguiente endpoint y el siguiente nombre para la view:
     
  ``` 
- path('favs/<username>/get', GetUserFavsAPIView.as_view()), 
+ path('favs/<username>/get/', GetUserFavsAPIView.as_view()), 
  ```
 
 La lógica a seguir podría ser:
@@ -120,9 +122,6 @@ La lógica a seguir podría ser:
   - **¿Cómo podríamos implementar todo lo anterior?. ¿Dónde agregaríamos esa lógica?**.
 
 **IMPORTANTE**: Al descargar la colección y el Ambiente de Trabajo (Environment) que se encuentran en el Campus e importarla dentro de Postam van a poder probar sus APIs.
-
-### 5. Instale Swagger para poder ver la documentación general de las APIs. 
-Basandose en la documentación de clase y el ejemplo brindado en "ejemplo_clase" instale Swagger para poder ver la documentación de sus APIs.
 
 ---
 
