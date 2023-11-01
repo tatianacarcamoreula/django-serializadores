@@ -1,35 +1,22 @@
 import requests
 import json
-import hashlib
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from e_commerce.models import *
-from marvel.settings import VERDE, CIAN, AMARILLO
+from e_commerce.models import Comic
+from e_commerce.utils import MARVEL_DICT, get_marvel_params
 
-
-# NOTE: Declaramos las variables que tienen que ver con la API KEY de Marvel:
-
-PUBLIC_KEY = '58ee40376f7c10e99f440f5e3abd2caa'
-PRIVATE_KEY = '2c0373e00d85edb4560f68ddc2094014e8694f90'
-TS = 1
-TO_HASH = str(TS)+PRIVATE_KEY+PUBLIC_KEY
-HASHED = hashlib.md5(TO_HASH.encode())
-URL_BASE = 'http://gateway.marvel.com/v1/public/'
-ENDPOINT = 'comics'
-PARAMS = dict(ts=TS, apikey=PUBLIC_KEY, hash=HASHED.hexdigest())
 
 
 @csrf_exempt
 def get_comics(request):
     '''
-    ```
     Vista personalizada de API para comprar comics, 
     primero consultamos los comics disponibles en la página de Marvel, 
     luego generamos una lista de los que tienen precio y descripción, 
     porque varios vienen `null`.
-    ```
     '''
     # Declaramos nuestras variables:
     id = []
@@ -52,24 +39,24 @@ def get_comics(request):
     else:
         offset = request.GET.get('offset')
     if request.GET.get('limit') == None or request.GET['limit'].isdigit() == False:
+    #  if not request.GET.get('limit') or not request.GET['limit'].isdigit():
         limit = 15
     else:
         limit = request.GET.get('limit')
 
     offset = int(offset)
     limit = int(limit)
-    next = offset + 15
-    previous = offset - 15
 
     # Realizamos el request:
-    aditional_params = {'limit': limit, 'offset': offset}
-    params = PARAMS
-    params.update(aditional_params)
-    # NOTE: A los parametros de hash, api key y demás, sumamos limit y offset para paginación.
-    res = requests.get(URL_BASE+ENDPOINT, params=params)
+    params = get_marvel_params()
+    params['limit'] = limit
+    params['offset'] = offset
+    # NOTE: A los parametros de hash, api key y demás,
+    # sumamos limit y offset para paginación.
+    res = requests.get(MARVEL_DICT.get('URL'), params=params)
     comics = json.loads(res.text)
 
-    # Obtenemos la lista de comics:
+    # Obtenemos la lista de comics del json:
     comics_list = comics.get('data').get('results')
 
     # Filtramos la lista de comics y nos quedamos con lo que nos interesa:
@@ -124,32 +111,11 @@ def get_comics(request):
             </form>
         </td>
         </tr>
-
+        
         '''
-    if offset == '0' or offset == 0:
-        visibility = "hidden"
-    else:
-        visibility = "visible"
-    template += f'''</table></div>
-    <table style="width:100%">
-        <tr>
-            <td>
-                <form action="/e-commerce/get-comics/" method="get" style ="visibility: {visibility};">
-                    <input type="number" id="button" name="offset" value="{previous}" style="visibility: hidden;">
-                    <input type="submit" value="PREV" >
-                </form>
-            </td>
-            <td>
-                <form action="/e-commerce/get-comics/" method="get" style ="visibility: visible;">
-                    <input type="number" id="button" name="offset" value="{next}" style="visibility: hidden;">
-                    <input type="submit" value="NEXT" >
-                </form>
-            </td>
-        </tr>
-    </table>
-    </div>'''
+    template += f'</table></div></div>'
     # Imprimimos por consola el HTML construido (se puede probar en https://codepen.io/):
-    print(VERDE+template)
+    print(template)
     # O lo podemos guardar en un HTML, como el nombre no cambia, el archivo se pisa en cada petición:
     f = open('get_comics.html','w')
     f.write(template)
@@ -219,5 +185,5 @@ def purchased_item(request):
     </table>
     '''
     # Imprimimos por consola el HTML construido (se puede probar en https://codepen.io/):
-    print(VERDE+template)
+    print(settings.VERDE + template)
     return HttpResponse(template)
