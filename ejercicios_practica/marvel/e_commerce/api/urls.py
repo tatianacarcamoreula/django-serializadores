@@ -25,5 +25,7 @@ urlpatterns = [
         RetrieveUpdateComicAPIView.as_view()
     ),
     path('comics/delete//<int:pk>/', DestroyComicAPIView.as_view()),
+    # TODO: User Class API View.
+
     # TODO: Wish-list Class API View.
 ]

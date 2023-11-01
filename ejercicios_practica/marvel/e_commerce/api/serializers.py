@@ -19,4 +19,4 @@ class ComicSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-# TODO: Realizar el serializador para el modelo de WishList
+# TODO: Realizar el serializador para el modelo de User y WishList
