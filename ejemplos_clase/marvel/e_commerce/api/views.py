@@ -1,4 +1,8 @@
+from django.forms.models import model_to_dict
+from django.shortcuts import get_object_or_404
+
 from rest_framework import status
+from rest_framework.decorators import api_view
 # (GET - ListAPIView) Listar todos los elementos en la entidad:
 # (POST - CreateAPIView) Inserta elementos en la DB
 # (GET - RetrieveAPIView) Devuelve un solo elemento de la entidad.
@@ -16,16 +20,57 @@ from rest_framework.generics import (
     UpdateAPIView
 )
 from rest_framework.response import Response
+from rest_framework.validators import ValidationError
 from rest_framework.views import APIView
 
 from e_commerce.api.serializers import *
-from e_commerce.models import Comic, WishList
+from e_commerce.models import Comic
+
+
+@api_view(http_method_names=['GET'])
+def comic_list_api_view(request):
+    _queryset = Comic.objects.all()
+    _data = list(_queryset.values()) if _queryset.exists() else []
+    return Response(data=_data, status=status.HTTP_200_OK)
+
+
+@api_view(http_method_names=['GET'])
+def comic_retrieve_api_view(request):
+    instance = get_object_or_404(
+        Comic, id=request.query_params.get('id')
+    )
+    return Response(
+        data=model_to_dict(instance), status=status.HTTP_200_OK
+    )
+
+
+@api_view(http_method_names=['POST'])
+def comic_create_api_view(request):
+    _marvel_id = request.data.pop('marvel_id', None)
+    print(request.data)
+    if not _marvel_id:
+        raise ValidationError(
+            {"marvel_id": "Este campo no puede ser nulo."}
+        )
+    _instance, _created = Comic.objects.get_or_create(
+        marvel_id=_marvel_id,
+        defaults=request.data
+    )
+    if _created:
+        return Response(
+            data=model_to_dict(_instance), status=status.HTTP_201_CREATED
+        )
+    return Response(
+        data={
+            "marvel_id": "Ya existe un comic con ese valor, debe ser único."
+        },
+        status=status.HTTP_400_BAD_REQUEST
+    )
 
 
 # NOTE: APIs genéricas:
-
 class GetComicAPIView(ListAPIView):
-    __doc__ = '''
+    '''
     `[METODO GET]`
     Esta vista de API nos devuelve una lista de todos los comics presentes 
     en la base de datos.
@@ -35,7 +80,7 @@ class GetComicAPIView(ListAPIView):
 
 
 class PostComicAPIView(CreateAPIView):
-    __doc__ = '''
+    '''
     `[METODO POST]`
     Esta vista de API nos permite hacer un insert en la base de datos.
     '''
@@ -44,7 +89,7 @@ class PostComicAPIView(CreateAPIView):
 
 
 class ListCreateComicAPIView(ListCreateAPIView):
-    __doc__ = '''
+    '''
     `[METODO GET-POST]`
     Esta vista de API nos devuelve una lista de todos los comics presentes 
     en la base de datos, pero en este caso ordenados según "marvel_id".
@@ -55,7 +100,7 @@ class ListCreateComicAPIView(ListCreateAPIView):
 
 
 class RetrieveUpdateComicAPIView(RetrieveUpdateAPIView):
-    __doc__ = '''
+    '''
     `[METODO GET-PUT-PATCH]`
     Esta vista de API nos permite actualizar un registro,
     o simplemente visualizarlo.
@@ -68,7 +113,7 @@ class RetrieveUpdateComicAPIView(RetrieveUpdateAPIView):
 # utilizando el serializador para validar los datos que llegan del request.
 # Dicho proceso se conoce como "deserialización".
 class UpdateComicAPIView(UpdateAPIView):
-    __doc__ = '''
+    '''
     `[METODO PUT-PATCH]`
     Esta vista de API nos permite actualizar un registro,
     o simplemente visualizarlo.
@@ -93,7 +138,7 @@ class UpdateComicAPIView(UpdateAPIView):
 
 
 class DestroyComicAPIView(DestroyAPIView):
-    __doc__ = '''
+    '''
     `[METODO DELETE]`
     Esta vista de API nos devuelve una lista de todos los comics presentes 
     en la base de datos.
@@ -103,7 +148,7 @@ class DestroyComicAPIView(DestroyAPIView):
 
 
 # class GetOneComicAPIView(RetrieveAPIView):
-#     __doc__ = '''
+#     '''
 #     `[METODO GET]`
 #     Esta vista de API nos devuelve un comic en particular de la base de datos.
 #     '''
@@ -112,7 +157,7 @@ class DestroyComicAPIView(DestroyAPIView):
 
 
 class GetOneComicAPIView(RetrieveAPIView):
-    __doc__ = '''
+    '''
     `[METODO GET]`
     Esta vista de API nos devuelve un comic en particular de la base de datos.
     '''
@@ -126,13 +171,13 @@ class GetOneComicAPIView(RetrieveAPIView):
         por medio de `self.kwargs` el parámetro `id` y con él 
         realizamos una query para traer el comic del ID solicitado. 
         '''
-        comic_id = self.kwargs['pk']
+        comic_id = self.kwargs.get('pk')
         queryset = self.queryset.filter(id=comic_id)
         return queryset
 
 
 class GetOneMarvelComicAPIView(RetrieveAPIView):
-    __doc__ = '''
+    '''
     `[METODO GET]`
     Esta vista de API nos devuelve un comic en particular de la base de datos
     a partir del valor del campo "marvel_id" pasado por URL.
@@ -180,10 +225,3 @@ class GetOneMarvelComicAPIView(RetrieveAPIView):
 #         return Response(
 #             data=serializer.data, status=status.HTTP_200_OK
 #         )
-
-
-
-# TODO: Agregar las vistas genericas(vistas de API basadas en clases) 
-# que permitan realizar un CRUD del modelo de wish-list.
-# TODO: Crear una vista generica modificada(vistas de API basadas en clases)
-# para traer todos los comics que tiene un usuario.
