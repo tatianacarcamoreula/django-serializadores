@@ -14,7 +14,7 @@ urlpatterns = [
     path('comics/list/', GetComicAPIView.as_view()),
     path('comics/<int:pk>/', GetOneComicAPIView.as_view()),
     path(
-        'comics/<int:marvel_id>/',
+        'comics/comic/<int:marvel_id>/',
         GetOneMarvelComicAPIView.as_view()
     ),
     path('comics/create/', PostComicAPIView.as_view()),
@@ -24,7 +24,7 @@ urlpatterns = [
         'comics/retrieve-update/<int:pk>/',
         RetrieveUpdateComicAPIView.as_view()
     ),
-    path('comics/delete//<int:pk>/', DestroyComicAPIView.as_view()),
+    path('comics/delete/<int:pk>/', DestroyComicAPIView.as_view()),
     # TODO: User Class API View.
 
     # TODO: Wish-list Class API View.
