@@ -1,6 +1,6 @@
 
 # Primero importamos los modelos que queremos serializar:
-from e_commerce.models import Comic
+from e_commerce.models import *
 
 # Luego importamos todos los serializadores de django rest framework.
 from rest_framework import serializers
@@ -19,4 +19,16 @@ class ComicSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
+
 # TODO: Realizar el serializador para el modelo de User y WishList
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email')
+        read_only_fields = ('id',)
+
+class WishListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WishList
+        fields = '__all__'
+        read_only_fields = ('id',)        
